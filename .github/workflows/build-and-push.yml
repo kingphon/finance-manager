@@ -29,6 +29,8 @@ permissions:
 env:
   GAR_LOCATION: asia-southeast1
   GAR_REPOSITORY: finance-manager
+  # Hardcode project ID to avoid secret interpolation issues
+  GCP_PROJECT_ID: project-eafcf241-6877-41f1-933
 
 jobs:
   build-and-push:
@@ -42,7 +44,25 @@ jobs:
         uses: actions/checkout@v4
 
       # =========================================================================
-      # Step 2: Authenticate to GCP using Workload Identity Federation
+      # Step 2: Debug - Check if secrets are loaded
+      # =========================================================================
+      - name: Debug secrets (safe - only shows if empty)
+        run: |
+          echo "Checking secrets..."
+          if [ -z "${{ secrets.GCP_WIF_PROVIDER }}" ]; then
+            echo "❌ GCP_WIF_PROVIDER is empty!"
+          else
+            echo "✅ GCP_WIF_PROVIDER is set"
+          fi
+          if [ -z "${{ secrets.GCP_SERVICE_ACCOUNT }}" ]; then
+            echo "❌ GCP_SERVICE_ACCOUNT is empty!"
+          else
+            echo "✅ GCP_SERVICE_ACCOUNT is set"
+          fi
+          echo "Using project: ${{ env.GCP_PROJECT_ID }}"
+
+      # =========================================================================
+      # Step 3: Authenticate to GCP using Workload Identity Federation
       # =========================================================================
       # This is the magic step! It:
       # 1. Gets an OIDC token from GitHub
@@ -58,7 +78,7 @@ jobs:
           token_format: access_token # We need this for Docker auth
 
       # =========================================================================
-      # Step 3: Set up Docker to push to GAR
+      # Step 4: Set up Docker to push to GAR
       # =========================================================================
       # Uses the access token from the previous step to authenticate Docker
       # =========================================================================
@@ -70,38 +90,34 @@ jobs:
           password: ${{ steps.auth.outputs.access_token }}
 
       # =========================================================================
-      # Step 4: Build and push Backend image
+      # Step 5: Build and push Backend image
       # =========================================================================
       - name: Build and push Backend
         uses: docker/build-push-action@v5
         with:
           context: ./apps/backend
           push: true
-          tags: |
-            ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/backend:${{ github.sha }}
-            ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/backend:latest
+          tags: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/backend:${{ github.sha }},${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/backend:latest
 
       # =========================================================================
-      # Step 5: Build and push Frontend image
+      # Step 6: Build and push Frontend image
       # =========================================================================
       - name: Build and push Frontend
         uses: docker/build-push-action@v5
         with:
           context: ./apps/frontend
           push: true
-          tags: |
-            ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/frontend:${{ github.sha }}
-            ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/frontend:latest
+          tags: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/frontend:${{ github.sha }},${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/frontend:latest
 
       # =========================================================================
-      # Step 6: Print image URLs (for easy copy-paste)
+      # Step 7: Print image URLs (for easy copy-paste)
       # =========================================================================
       - name: Print image URLs
         run: |
           echo "✅ Images pushed successfully!"
           echo ""
           echo "Backend:"
-          echo "  ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/backend:${{ github.sha }}"
+          echo "  ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/backend:${{ github.sha }}"
           echo ""
           echo "Frontend:"
-          echo "  ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/frontend:${{ github.sha }}"
+          echo "  ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/frontend:${{ github.sha }}"
