@@ -4,13 +4,13 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Copy package files
-COPY package.json pnpm-lock.yaml* ./
+COPY package.json ./
 
 # Install pnpm
 RUN npm install -g pnpm
 
-# Install dependencies
-RUN pnpm install --frozen-lockfile
+# Install dependencies (no frozen-lockfile since lockfile is at monorepo root)
+RUN pnpm install
 
 # Copy source code
 COPY . .
