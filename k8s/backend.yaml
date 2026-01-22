@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: finance-manager
+  labels:
+    app: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      imagePullSecrets:
+      - name: gcr-secret
+      containers:
+      - name: backend
+        image: asia-southeast1-docker.pkg.dev/project-eafcf241-6877-41f1-933/finance-manager/backend:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: backend-secrets
+              key: DATABASE_URL
+        - name: FRONTEND_URL
+          value: "https://dashboard.cash-pilot.shop"
+        - name: BACKEND_URL
+          value: "https://api.cash-pilot.shop"
+        - name: OAUTH_REDIRECT_URI
+          value: "https://dashboard.cash-pilot.shop/auth/callback"
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: finance-manager
+spec:
+  selector:
+    app: backend
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
