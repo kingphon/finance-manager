@@ -150,10 +150,37 @@ jobs:
 
       - name: Deploy to K3s
         uses: appleboy/ssh-action@v1.0.3
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+          GAR_LOCATION: ${{ env.GAR_LOCATION }}
+          GCP_PROJECT_ID: ${{ env.GCP_PROJECT_ID }}
+          GAR_REPOSITORY: ${{ env.GAR_REPOSITORY }}
         with:
           host: ${{ secrets.VM_HOST }}
           username: ${{ secrets.VM_USER }}
           key: ${{ secrets.VM_SSH_KEY }}
+          envs: IMAGE_TAG,GAR_LOCATION,GCP_PROJECT_ID,GAR_REPOSITORY
           script: |
+            # Refresh gcr-secret with new access token
+            ACCESS_TOKEN=$(gcloud auth print-access-token)
+            sudo kubectl delete secret gcr-secret -n finance-manager --ignore-not-found
+            sudo kubectl create secret docker-registry gcr-secret \
+              --namespace=finance-manager \
+              --docker-server=${GAR_LOCATION}-docker.pkg.dev \
+              --docker-username=oauth2accesstoken \
+              --docker-password="$ACCESS_TOKEN"
+
+            # Apply k8s manifests
             sudo kubectl apply -f finance-manager-deploy/k8s/
-            sudo kubectl rollout restart deployment -n finance-manager
+
+            # Update images with specific commit SHA tag
+            sudo kubectl set image deployment/backend \
+              backend=${GAR_LOCATION}-docker.pkg.dev/${GCP_PROJECT_ID}/${GAR_REPOSITORY}/backend:${IMAGE_TAG} \
+              -n finance-manager
+            sudo kubectl set image deployment/frontend \
+              frontend=${GAR_LOCATION}-docker.pkg.dev/${GCP_PROJECT_ID}/${GAR_REPOSITORY}/frontend:${IMAGE_TAG} \
+              -n finance-manager
+
+            # Wait for rollout
+            sudo kubectl rollout status deployment/backend -n finance-manager --timeout=120s
+            sudo kubectl rollout status deployment/frontend -n finance-manager --timeout=120s
