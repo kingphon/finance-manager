@@ -44,3 +44,6 @@ htmlcov/
 
 # Turbo
 .turbo/
+
+# Auto Claude data directory
+.auto-claude/

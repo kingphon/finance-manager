@@ -3,6 +3,10 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+# Build argument for API URL
+ARG VITE_API_URL=http://localhost:8000
+ENV VITE_API_URL=$VITE_API_URL
+
 # Copy package files
 COPY package.json ./
 
@@ -15,7 +19,7 @@ RUN pnpm install
 # Copy source code
 COPY . .
 
-# Build the app
+# Build the app with environment variable
 RUN pnpm build
 
 # Production stage
