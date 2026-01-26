@@ -3,13 +3,14 @@
  */
 import { useState, type FormEvent } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Wallet, Mail, Lock, Github, Loader2 } from "lucide-react";
+import { Mail, Lock, Github, Gamepad2 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { ThemeToggle } from "../components/ThemeToggle";
 
 export function LoginPage() {
   const [isRegister, setIsRegister] = useState(false);
@@ -47,27 +48,32 @@ export function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 gradient-animated">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-background">
+      {/* Theme toggle in corner */}
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
+
       <div className="w-full max-w-md">
         {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-2xl gradient-primary flex items-center justify-center mx-auto mb-4">
-            <Wallet className="w-8 h-8 text-white" />
+        <div className="text-center mb-6">
+          <div className="w-16 h-16 bg-primary border-[3px] border-border shadow-[4px_4px_0_0_hsl(var(--border))] flex items-center justify-center mx-auto mb-4">
+            <Gamepad2 className="w-8 h-8 text-primary-foreground" />
           </div>
-          <h1 className="text-2xl font-bold">Finance Manager</h1>
-          <p className="text-muted-foreground mt-2">
-            Track your income and expenses
+          <h1 className="font-['Press_Start_2P'] text-sm">FINANCE QUEST</h1>
+          <p className="text-muted-foreground mt-3">
+            Track your gold and treasures!
           </p>
         </div>
 
         {/* Card */}
-        <Card className="glass">
+        <Card>
           <CardHeader className="text-center">
-            <CardTitle>{isRegister ? "Create Account" : "Welcome Back"}</CardTitle>
+            <CardTitle>{isRegister ? "NEW GAME" : "CONTINUE"}</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-4">
             {(error || oauthError) && (
-              <div className="p-3 rounded-lg bg-destructive/20 text-destructive text-sm">
+              <div className="p-3 border-2 border-destructive bg-destructive/20 text-destructive text-sm">
                 {error || oauthError}
               </div>
             )}
@@ -155,23 +161,23 @@ export function LoginPage() {
 
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span className="animate-blink">LOADING...</span>
                 ) : isRegister ? (
-                  "Create Account"
+                  "START GAME"
                 ) : (
-                  "Sign In"
+                  "PRESS START"
                 )}
               </Button>
             </form>
 
             <p className="text-center text-sm text-muted-foreground">
-              {isRegister ? "Already have an account?" : "Don't have an account?"}{" "}
+              {isRegister ? "Have a save file?" : "New player?"}{" "}
               <Button
                 variant="link"
                 onClick={() => setIsRegister(!isRegister)}
-                className="p-0 h-auto font-medium"
+                className="p-0 h-auto"
               >
-                {isRegister ? "Sign In" : "Create one"}
+                {isRegister ? "LOAD GAME" : "NEW GAME"}
               </Button>
             </p>
           </CardContent>

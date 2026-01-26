@@ -26,74 +26,74 @@ export function DashboardPage() {
   const { formatAmount } = useCurrency();
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-        <p className="text-muted-foreground mt-1">
+        <h1>DASHBOARD</h1>
+        <p className="text-muted-foreground mt-2">
           Your financial overview at a glance
         </p>
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Balance Card */}
-        <Card className="glass">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-muted-foreground">Total Balance</span>
-              <div className="w-10 h-10 rounded-lg gradient-primary flex items-center justify-center">
-                <Wallet className="w-5 h-5 text-white" />
+        <Card>
+          <CardContent className="pt-4">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-muted-foreground text-sm">BALANCE</span>
+              <div className="w-8 h-8 bg-primary border-2 border-border flex items-center justify-center">
+                <Wallet className="w-4 h-4 text-primary-foreground" />
               </div>
             </div>
-            <p className="text-3xl font-bold">
+            <p className="font-['Press_Start_2P'] text-lg">
               {reportsLoading ? (
-                <span className="animate-pulse">---</span>
+                <span className="animate-blink">---</span>
               ) : (
                 formatAmount(summary?.balance || 0)
               )}
             </p>
-            <p className="text-sm text-muted-foreground mt-2">All time balance</p>
+            <p className="text-sm text-muted-foreground mt-2">All time</p>
           </CardContent>
         </Card>
 
         {/* Income Card */}
         <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-muted-foreground">Total Income</span>
-              <div className="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-emerald-400" />
+          <CardContent className="pt-4">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-muted-foreground text-sm">INCOME</span>
+              <div className="w-8 h-8 bg-[hsl(var(--income))] border-2 border-border flex items-center justify-center">
+                <TrendingUp className="w-4 h-4 text-[hsl(var(--income-foreground))]" />
               </div>
             </div>
-            <p className="text-3xl font-bold text-emerald-400">
+            <p className="font-['Press_Start_2P'] text-lg text-[hsl(var(--income))]">
               {reportsLoading ? (
-                <span className="animate-pulse">---</span>
+                <span className="animate-blink">---</span>
               ) : (
                 formatAmount(summary?.total_income || 0)
               )}
             </p>
-            <p className="text-sm text-muted-foreground mt-2">All time income</p>
+            <p className="text-sm text-muted-foreground mt-2">All time</p>
           </CardContent>
         </Card>
 
         {/* Expense Card */}
         <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-muted-foreground">Total Expenses</span>
-              <div className="w-10 h-10 rounded-lg bg-rose-500/20 flex items-center justify-center">
-                <TrendingDown className="w-5 h-5 text-rose-400" />
+          <CardContent className="pt-4">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-muted-foreground text-sm">EXPENSES</span>
+              <div className="w-8 h-8 bg-[hsl(var(--expense))] border-2 border-border flex items-center justify-center">
+                <TrendingDown className="w-4 h-4 text-[hsl(var(--expense-foreground))]" />
               </div>
             </div>
-            <p className="text-3xl font-bold text-rose-400">
+            <p className="font-['Press_Start_2P'] text-lg text-[hsl(var(--expense))]">
               {reportsLoading ? (
-                <span className="animate-pulse">---</span>
+                <span className="animate-blink">---</span>
               ) : (
                 formatAmount(summary?.total_expense || 0)
               )}
             </p>
-            <p className="text-sm text-muted-foreground mt-2">All time expenses</p>
+            <p className="text-sm text-muted-foreground mt-2">All time</p>
           </CardContent>
         </Card>
       </div>
