@@ -20,6 +20,8 @@ import {
   CURRENCIES,
   type CurrencyCode,
 } from "../context/CurrencyContext";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 export function SettingsPage() {
   const [showForm, setShowForm] = useState(false);
@@ -80,26 +82,29 @@ export function SettingsPage() {
 
   // Reusable category card component
   const CategoryCard = ({ category }: { category: Category }) => (
-    <div className="flex items-center justify-between p-3 rounded-lg bg-[var(--color-bg-dark)] hover:bg-[var(--color-bg-hover)] transition-colors group">
+    <div className="flex items-center justify-between p-3 rounded-lg bg-background hover:bg-accent transition-colors group">
       <div className="flex items-center gap-3">
-        <Tag className="w-4 h-4 text-[var(--color-text-muted)]" />
+        <Tag className="w-4 h-4 text-muted-foreground" />
         <span className="font-medium">{category.name}</span>
       </div>
       <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-        <button
+        <Button
+          variant="ghost"
+          size="icon-xs"
           onClick={() => handleEditClick(category)}
-          className="p-1.5 rounded-lg hover:bg-[var(--color-bg-hover)] text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors"
           title="Edit"
         >
           <Pencil className="w-3.5 h-3.5" />
-        </button>
-        <button
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon-xs"
           onClick={() => handleDeleteClick(category)}
-          className="p-1.5 rounded-lg hover:bg-[var(--color-bg-hover)] text-[var(--color-text-muted)] hover:text-[var(--color-danger)] transition-colors"
+          className="hover:text-destructive"
           title="Delete"
         >
           <Trash2 className="w-3.5 h-3.5" />
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -110,138 +115,148 @@ export function SettingsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Settings</h1>
-          <p className="text-[var(--color-text-muted)] mt-1">
+          <p className="text-muted-foreground mt-1">
             Manage your categories and preferences
           </p>
         </div>
-        <button onClick={handleAddClick} className="btn btn-primary">
+        <Button onClick={handleAddClick}>
           <Plus className="w-5 h-5" />
           Add Category
-        </button>
+        </Button>
       </div>
 
       {/* Currency Selector */}
-      <div className="card p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-lg bg-[var(--color-primary)]/10 flex items-center justify-center">
-            <Coins className="w-5 h-5 text-[var(--color-primary)]" />
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Coins className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <CardTitle>Display Currency</CardTitle>
+              <CardDescription>
+                Choose how amounts are displayed (display only, no conversion)
+              </CardDescription>
+            </div>
           </div>
-          <div>
-            <h2 className="text-lg font-semibold">Display Currency</h2>
-            <p className="text-sm text-[var(--color-text-muted)]">
-              Choose how amounts are displayed (display only, no conversion)
-            </p>
-          </div>
-        </div>
-        <div className="flex gap-3">
-          {(Object.keys(CURRENCIES) as CurrencyCode[]).map((code) => {
-            const config = CURRENCIES[code];
-            const isSelected = currency === code;
-            return (
-              <button
-                key={code}
-                onClick={() => setCurrency(code)}
-                className={`flex items-center gap-3 px-5 py-3 rounded-xl border-2 transition-all duration-200 ${
-                  isSelected
-                    ? "border-[var(--color-primary)] bg-[var(--color-primary)]/10"
-                    : "border-[var(--color-border)] hover:border-[var(--color-primary)]/50 hover:bg-[var(--color-bg-hover)]"
-                }`}
-              >
-                <span className="text-2xl font-bold">{config.symbol}</span>
-                <div className="text-left">
-                  <div className="font-semibold">{code}</div>
-                  <div className="text-xs text-[var(--color-text-muted)]">
-                    {code === "USD" ? "US Dollar" : "Vietnamese Dong"}
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex gap-3">
+            {(Object.keys(CURRENCIES) as CurrencyCode[]).map((code) => {
+              const config = CURRENCIES[code];
+              const isSelected = currency === code;
+              return (
+                <button
+                  key={code}
+                  onClick={() => setCurrency(code)}
+                  className={`flex items-center gap-3 px-5 py-3 rounded-xl border-2 transition-all duration-200 ${
+                    isSelected
+                      ? "border-primary bg-primary/10"
+                      : "border-border hover:border-primary/50 hover:bg-accent"
+                  }`}
+                >
+                  <span className="text-2xl font-bold">{config.symbol}</span>
+                  <div className="text-left">
+                    <div className="font-semibold">{code}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {code === "USD" ? "US Dollar" : "Vietnamese Dong"}
+                    </div>
                   </div>
-                </div>
-                {isSelected && (
-                  <div className="w-2 h-2 rounded-full bg-[var(--color-primary)] ml-2" />
-                )}
-              </button>
-            );
-          })}
-        </div>
-        <div className="mt-4 p-3 rounded-lg bg-[var(--color-bg-dark)] text-sm">
-          <span className="text-[var(--color-text-muted)]">Preview: </span>
-          <span className="font-medium">{formatAmount(1234567.89)}</span>
-        </div>
-      </div>
+                  {isSelected && (
+                    <div className="w-2 h-2 rounded-full bg-primary ml-2" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+          <div className="p-3 rounded-lg bg-background text-sm">
+            <span className="text-muted-foreground">Preview: </span>
+            <span className="font-medium">{formatAmount(1234567.89)}</span>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Categories Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Expense Categories Box */}
-        <div className="card p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-lg bg-[var(--color-expense)]/10 flex items-center justify-center">
-              <TrendingDown className="w-5 h-5 text-[var(--color-expense)]" />
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-rose-500/10 flex items-center justify-center">
+                <TrendingDown className="w-5 h-5 text-rose-400" />
+              </div>
+              <div>
+                <CardTitle>Expense Categories</CardTitle>
+                <CardDescription>
+                  {expenseCategories.length} categories
+                </CardDescription>
+              </div>
             </div>
-            <div>
-              <h2 className="text-lg font-semibold">Expense Categories</h2>
-              <p className="text-sm text-[var(--color-text-muted)]">
-                {expenseCategories.length} categories
-              </p>
-            </div>
-          </div>
-
-          {isLoading ? (
-            <div className="space-y-2">
-              {[1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className="h-12 bg-[var(--color-bg-hover)] rounded-lg animate-pulse"
-                />
-              ))}
-            </div>
-          ) : expenseCategories.length === 0 ? (
-            <div className="text-center py-8 text-[var(--color-text-muted)]">
-              <Tag className="w-8 h-8 mx-auto mb-2 opacity-50" />
-              <p className="text-sm">No expense categories yet</p>
-            </div>
-          ) : (
-            <div className="space-y-2 max-h-80 overflow-y-auto">
-              {expenseCategories.map((category) => (
-                <CategoryCard key={category.id} category={category} />
-              ))}
-            </div>
-          )}
-        </div>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <div className="space-y-2">
+                {[1, 2, 3].map((i) => (
+                  <div
+                    key={i}
+                    className="h-12 bg-muted rounded-lg animate-pulse"
+                  />
+                ))}
+              </div>
+            ) : expenseCategories.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <Tag className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                <p className="text-sm">No expense categories yet</p>
+              </div>
+            ) : (
+              <div className="space-y-2 max-h-80 overflow-y-auto">
+                {expenseCategories.map((category) => (
+                  <CategoryCard key={category.id} category={category} />
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Income Categories Box */}
-        <div className="card p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-lg bg-[var(--color-income)]/10 flex items-center justify-center">
-              <TrendingUp className="w-5 h-5 text-[var(--color-income)]" />
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                <TrendingUp className="w-5 h-5 text-emerald-400" />
+              </div>
+              <div>
+                <CardTitle>Income Categories</CardTitle>
+                <CardDescription>
+                  {incomeCategories.length} categories
+                </CardDescription>
+              </div>
             </div>
-            <div>
-              <h2 className="text-lg font-semibold">Income Categories</h2>
-              <p className="text-sm text-[var(--color-text-muted)]">
-                {incomeCategories.length} categories
-              </p>
-            </div>
-          </div>
-
-          {isLoading ? (
-            <div className="space-y-2">
-              {[1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className="h-12 bg-[var(--color-bg-hover)] rounded-lg animate-pulse"
-                />
-              ))}
-            </div>
-          ) : incomeCategories.length === 0 ? (
-            <div className="text-center py-8 text-[var(--color-text-muted)]">
-              <Tag className="w-8 h-8 mx-auto mb-2 opacity-50" />
-              <p className="text-sm">No income categories yet</p>
-            </div>
-          ) : (
-            <div className="space-y-2 max-h-80 overflow-y-auto">
-              {incomeCategories.map((category) => (
-                <CategoryCard key={category.id} category={category} />
-              ))}
-            </div>
-          )}
-        </div>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <div className="space-y-2">
+                {[1, 2, 3].map((i) => (
+                  <div
+                    key={i}
+                    className="h-12 bg-muted rounded-lg animate-pulse"
+                  />
+                ))}
+              </div>
+            ) : incomeCategories.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <Tag className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                <p className="text-sm">No income categories yet</p>
+              </div>
+            ) : (
+              <div className="space-y-2 max-h-80 overflow-y-auto">
+                {incomeCategories.map((category) => (
+                  <CategoryCard key={category.id} category={category} />
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
       {/* Category Form Modal */}

@@ -12,6 +12,9 @@ import {
   Wallet,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
 
 interface LayoutProps {
   children: ReactNode;
@@ -31,9 +34,9 @@ export function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen flex">
       {/* Sidebar */}
-      <aside className="w-64 bg-[var(--color-bg-card)] border-r border-[var(--color-border)] flex flex-col">
+      <aside className="w-64 bg-sidebar-background border-r border-sidebar-border flex flex-col">
         {/* Logo */}
-        <div className="p-6 border-b border-[var(--color-border)]">
+        <div className="p-6">
           <Link to="/" className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center">
               <Wallet className="w-5 h-5 text-white" />
@@ -41,6 +44,7 @@ export function Layout({ children }: LayoutProps) {
             <span className="text-lg font-semibold">Finance</span>
           </Link>
         </div>
+        <Separator />
 
         {/* Navigation */}
         <nav className="flex-1 p-4">
@@ -50,17 +54,20 @@ export function Layout({ children }: LayoutProps) {
               const isActive = location.pathname === item.path;
               return (
                 <li key={item.path}>
-                  <Link
-                    to={item.path}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+                  <Button
+                    variant={isActive ? "default" : "ghost"}
+                    className={`w-full justify-start gap-3 ${
                       isActive
-                        ? "bg-[var(--color-primary)] text-white"
-                        : "text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)] hover:text-[var(--color-text-primary)]"
+                        ? "bg-sidebar-primary text-sidebar-primary-foreground"
+                        : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                     }`}
+                    asChild
                   >
-                    <Icon className="w-5 h-5" />
-                    <span className="font-medium">{item.label}</span>
-                  </Link>
+                    <Link to={item.path}>
+                      <Icon className="w-5 h-5" />
+                      <span className="font-medium">{item.label}</span>
+                    </Link>
+                  </Button>
                 </li>
               );
             })}
@@ -68,23 +75,26 @@ export function Layout({ children }: LayoutProps) {
         </nav>
 
         {/* User section */}
-        <div className="p-4 border-t border-[var(--color-border)]">
-          <div className="flex items-center gap-3 px-4 py-3">
-            <div className="w-9 h-9 rounded-full gradient-secondary flex items-center justify-center">
-              <span className="text-sm font-medium text-white">
+        <Separator />
+        <div className="p-4">
+          <div className="flex items-center gap-3 px-2 py-2">
+            <Avatar className="h-9 w-9">
+              <AvatarFallback className="gradient-secondary text-white text-sm font-medium">
                 {user?.email?.charAt(0).toUpperCase()}
-              </span>
-            </div>
+              </AvatarFallback>
+            </Avatar>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate">{user?.email}</p>
             </div>
-            <button
+            <Button
+              variant="ghost"
+              size="icon-sm"
               onClick={logout}
-              className="p-2 rounded-lg hover:bg-[var(--color-bg-hover)] text-[var(--color-text-muted)] hover:text-[var(--color-danger)] transition-colors"
+              className="hover:text-destructive"
               title="Logout"
             >
               <LogOut className="w-4 h-4" />
-            </button>
+            </Button>
           </div>
         </div>
       </aside>

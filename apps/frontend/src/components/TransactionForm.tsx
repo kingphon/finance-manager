@@ -2,9 +2,18 @@
  * Transaction Form component for creating/editing transactions.
  */
 import { useState, type FormEvent } from "react";
-import { Plus, Save } from "lucide-react";
-import { Modal } from "./ui/Modal";
+import { Plus, Save, Loader2 } from "lucide-react";
 import type { Category } from "../hooks/useCategories";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface TransactionFormProps {
   categories: Category[];
@@ -74,114 +83,113 @@ export function TransactionForm({
   const expenseCategories = categories.filter((c) => c.type === "expense");
 
   return (
-    <Modal
-      isOpen={true}
-      onClose={onClose}
-      title={isEdit ? "Edit Transaction" : "New Transaction"}
-    >
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {error && (
-          <div className="p-3 rounded-lg bg-[var(--color-danger)]/20 text-[var(--color-danger)] text-sm">
-            {error}
+    <Dialog open={true} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{isEdit ? "Edit Transaction" : "New Transaction"}</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {error && (
+            <div className="p-3 rounded-lg bg-destructive/20 text-destructive text-sm">
+              {error}
+            </div>
+          )}
+
+          <div className="space-y-2">
+            <Label htmlFor="amount">Amount *</Label>
+            <Input
+              id="amount"
+              type="number"
+              step="0.01"
+              min="0.01"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              placeholder="0.00"
+              required
+              autoFocus
+            />
           </div>
-        )}
 
-        <div>
-          <label className="label">Amount *</label>
-          <input
-            type="number"
-            step="0.01"
-            min="0.01"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            className="input"
-            placeholder="0.00"
-            required
-            autoFocus
-          />
-        </div>
+          <div className="space-y-2">
+            <Label htmlFor="category">Category *</Label>
+            <select
+              id="category"
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
+              className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:border-ring"
+              required
+            >
+              <option value="">Select a category</option>
+              {incomeCategories.length > 0 && (
+                <optgroup label="Income">
+                  {incomeCategories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </optgroup>
+              )}
+              {expenseCategories.length > 0 && (
+                <optgroup label="Expense">
+                  {expenseCategories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </optgroup>
+              )}
+            </select>
+          </div>
 
-        <div>
-          <label className="label">Category *</label>
-          <select
-            value={categoryId}
-            onChange={(e) => setCategoryId(e.target.value)}
-            className="input"
-            required
-          >
-            <option value="">Select a category</option>
-            {incomeCategories.length > 0 && (
-              <optgroup label="Income">
-                {incomeCategories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </option>
-                ))}
-              </optgroup>
-            )}
-            {expenseCategories.length > 0 && (
-              <optgroup label="Expense">
-                {expenseCategories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </option>
-                ))}
-              </optgroup>
-            )}
-          </select>
-        </div>
+          <div className="space-y-2">
+            <Label htmlFor="date">Date *</Label>
+            <Input
+              id="date"
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              required
+            />
+          </div>
 
-        <div>
-          <label className="label">Date *</label>
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="input"
-            required
-          />
-        </div>
+          <div className="space-y-2">
+            <Label htmlFor="description">Description</Label>
+            <textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="flex min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:border-ring resize-none"
+              placeholder="Optional description..."
+            />
+          </div>
 
-        <div>
-          <label className="label">Description</label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="input min-h-[80px] resize-none"
-            placeholder="Optional description..."
-          />
-        </div>
-
-        <div className="flex gap-3 pt-2">
-          <button
-            type="button"
-            onClick={onClose}
-            className="btn btn-secondary flex-1"
-            disabled={isSubmitting}
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="btn btn-primary flex-1"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              <span className="spinner" />
-            ) : isEdit ? (
-              <>
-                <Save className="w-4 h-4" />
-                Save
-              </>
-            ) : (
-              <>
-                <Plus className="w-4 h-4" />
-                Create
-              </>
-            )}
-          </button>
-        </div>
-      </form>
-    </Modal>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : isEdit ? (
+                <>
+                  <Save className="w-4 h-4" />
+                  Save
+                </>
+              ) : (
+                <>
+                  <Plus className="w-4 h-4" />
+                  Create
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }

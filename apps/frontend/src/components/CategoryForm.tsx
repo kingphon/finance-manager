@@ -1,6 +1,15 @@
 import { useState, type FormEvent } from "react";
-import { Plus, Save } from "lucide-react";
-import { Modal } from "./ui/Modal";
+import { Plus, Save, Loader2 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface CategoryFormProps {
   onSubmit: (data: {
@@ -53,89 +62,88 @@ export function CategoryForm({
   };
 
   return (
-    <Modal
-      isOpen={true}
-      onClose={onClose}
-      title={isEdit ? "Edit Category" : "New Category"}
-    >
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {error && (
-          <div className="p-3 rounded-lg bg-[var(--color-danger)]/20 text-[var(--color-danger)] text-sm">
-            {error}
+    <Dialog open={true} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{isEdit ? "Edit Category" : "New Category"}</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {error && (
+            <div className="p-3 rounded-lg bg-destructive/20 text-destructive text-sm">
+              {error}
+            </div>
+          )}
+
+          <div className="space-y-2">
+            <Label htmlFor="name">Name *</Label>
+            <Input
+              id="name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="e.g., Groceries"
+              autoFocus
+              required
+            />
           </div>
-        )}
 
-        <div>
-          <label className="label">Name *</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="input"
-            placeholder="e.g., Groceries"
-            autoFocus
-            required
-          />
-        </div>
-
-        <div>
-          <label className="label">Type *</label>
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              type="button"
-              onClick={() => setType("income")}
-              className={`py-2 px-4 rounded-lg border font-medium transition-all ${
-                type === "income"
-                  ? "border-[var(--color-income)] bg-[var(--color-income)]/10 text-[var(--color-income)]"
-                  : "border-[var(--color-border)] hover:bg-[var(--color-bg-hover)]"
-              }`}
-            >
-              Income
-            </button>
-            <button
-              type="button"
-              onClick={() => setType("expense")}
-              className={`py-2 px-4 rounded-lg border font-medium transition-all ${
-                type === "expense"
-                  ? "border-[var(--color-expense)] bg-[var(--color-expense)]/10 text-[var(--color-expense)]"
-                  : "border-[var(--color-border)] hover:bg-[var(--color-bg-hover)]"
-              }`}
-            >
-              Expense
-            </button>
+          <div className="space-y-2">
+            <Label>Type *</Label>
+            <div className="grid grid-cols-2 gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setType("income")}
+                className={
+                  type === "income"
+                    ? "border-emerald-500 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20"
+                    : ""
+                }
+              >
+                Income
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setType("expense")}
+                className={
+                  type === "expense"
+                    ? "border-rose-500 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20"
+                    : ""
+                }
+              >
+                Expense
+              </Button>
+            </div>
           </div>
-        </div>
 
-        <div className="flex gap-3 pt-2">
-          <button
-            type="button"
-            onClick={onClose}
-            className="btn btn-secondary flex-1"
-            disabled={isSubmitting}
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="btn btn-primary flex-1"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              <span className="spinner" />
-            ) : isEdit ? (
-              <>
-                <Save className="w-4 h-4" />
-                Save
-              </>
-            ) : (
-              <>
-                <Plus className="w-4 h-4" />
-                Create
-              </>
-            )}
-          </button>
-        </div>
-      </form>
-    </Modal>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : isEdit ? (
+                <>
+                  <Save className="w-4 h-4" />
+                  Save
+                </>
+              ) : (
+                <>
+                  <Plus className="w-4 h-4" />
+                  Create
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }

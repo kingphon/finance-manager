@@ -13,6 +13,7 @@ import {
 } from "recharts";
 import type { MonthlyTrend } from "../../hooks/useReports";
 import { useCurrency } from "../../context/CurrencyContext";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface TrendChartProps {
   data: MonthlyTrend[];
@@ -27,18 +28,25 @@ export function TrendChart({
 
   if (data.length === 0) {
     return (
-      <div className="card p-6">
-        <h3 className="text-lg font-semibold mb-4">{title}</h3>
-        <div className="h-64 flex items-center justify-center text-[var(--color-text-muted)]">
-          No trend data available
-        </div>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>{title}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-64 flex items-center justify-center text-muted-foreground">
+            No trend data available
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div className="card p-6">
-      <h3 className="text-lg font-semibold mb-4">{title}</h3>
+    <Card>
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+      </CardHeader>
+      <CardContent>
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
@@ -127,6 +135,7 @@ export function TrendChart({
           </AreaChart>
         </ResponsiveContainer>
       </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

@@ -5,6 +5,8 @@ import { useCategories } from "../hooks/useCategories";
 import { TransactionList } from "../components/TransactionList";
 import { TransactionForm } from "../components/TransactionForm";
 import { ConfirmDialog } from "../components/ui/ConfirmDialog";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 export function TransactionsPage() {
   const [showForm, setShowForm] = useState(false);
@@ -70,54 +72,49 @@ export function TransactionsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Transactions</h1>
-          <p className="text-[var(--color-text-muted)] mt-1">
+          <p className="text-muted-foreground mt-1">
             {total} total transactions
           </p>
         </div>
-        <button onClick={() => setShowForm(true)} className="btn btn-primary">
+        <Button onClick={() => setShowForm(true)}>
           <Plus className="w-5 h-5" />
           Add Transaction
-        </button>
+        </Button>
       </div>
 
       {/* Filters */}
-      <div className="card p-4">
-        <div className="flex items-center gap-4">
-          <Filter className="w-5 h-5 text-[var(--color-text-muted)]" />
-          <div className="flex gap-2">
-            <button
-              onClick={() => setTypeFilter("")}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                typeFilter === ""
-                  ? "bg-[var(--color-primary)] text-white"
-                  : "bg-[var(--color-bg-hover)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
-              }`}
-            >
-              All
-            </button>
-            <button
-              onClick={() => setTypeFilter("income")}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                typeFilter === "income"
-                  ? "bg-[var(--color-income)] text-white"
-                  : "bg-[var(--color-bg-hover)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
-              }`}
-            >
-              Income
-            </button>
-            <button
-              onClick={() => setTypeFilter("expense")}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                typeFilter === "expense"
-                  ? "bg-[var(--color-expense)] text-white"
-                  : "bg-[var(--color-bg-hover)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
-              }`}
-            >
-              Expense
-            </button>
+      <Card>
+        <CardContent className="pt-4">
+          <div className="flex items-center gap-4">
+            <Filter className="w-5 h-5 text-muted-foreground" />
+            <div className="flex gap-2">
+              <Button
+                onClick={() => setTypeFilter("")}
+                variant={typeFilter === "" ? "default" : "ghost"}
+                size="sm"
+              >
+                All
+              </Button>
+              <Button
+                onClick={() => setTypeFilter("income")}
+                variant={typeFilter === "income" ? "default" : "ghost"}
+                size="sm"
+                className={typeFilter === "income" ? "bg-emerald-500 hover:bg-emerald-600" : ""}
+              >
+                Income
+              </Button>
+              <Button
+                onClick={() => setTypeFilter("expense")}
+                variant={typeFilter === "expense" ? "default" : "ghost"}
+                size="sm"
+                className={typeFilter === "expense" ? "bg-rose-500 hover:bg-rose-600" : ""}
+              >
+                Expense
+              </Button>
+            </div>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Transaction List */}
       <TransactionList
@@ -130,23 +127,23 @@ export function TransactionsPage() {
       {/* Pagination */}
       {pages > 1 && (
         <div className="flex items-center justify-center gap-2">
-          <button
+          <Button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="btn btn-secondary"
+            variant="outline"
           >
             Previous
-          </button>
-          <span className="text-[var(--color-text-secondary)] px-4">
+          </Button>
+          <span className="text-muted-foreground px-4">
             Page {page} of {pages}
           </span>
-          <button
+          <Button
             onClick={() => setPage((p) => Math.min(pages, p + 1))}
             disabled={page === pages}
-            className="btn btn-secondary"
+            variant="outline"
           >
             Next
-          </button>
+          </Button>
         </div>
       )}
 
